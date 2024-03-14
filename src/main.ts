@@ -11,10 +11,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT'));
-  const clientPort = parseInt(configService.get('CLIENT_PORT'));
 
   app.enableCors({
-    origin: [`http://37.193.157.80`],
+    origin: [],
   });
   app.useWebSocketAdapter(new SocketIOAdapter(app, configService));
 

@@ -11,9 +11,8 @@ async function bootstrap() {
     app.setGlobalPrefix('mdws');
     const configService = app.get(config_1.ConfigService);
     const port = parseInt(configService.get('PORT'));
-    const clientPort = parseInt(configService.get('CLIENT_PORT'));
     app.enableCors({
-        origin: [`http://37.193.157.80`],
+        origin: [],
     });
     app.useWebSocketAdapter(new socket_io_adapter_1.SocketIOAdapter(app, configService));
     await app.listen(port);

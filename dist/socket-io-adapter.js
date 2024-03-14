@@ -12,15 +12,9 @@ class SocketIOAdapter extends platform_socket_io_1.IoAdapter {
         this.logger = new common_1.Logger(SocketIOAdapter.name);
     }
     createIOServer(port, options) {
-        const clientPort = parseInt(this.configService.get('CLIENT_PORT'));
         const cors = {
-            origin: [
-                `http://37.193.157.80`,
-            ],
+            origin: [],
         };
-        this.logger.log('Configuring SocketIO server with custom CORS options', {
-            cors,
-        });
         const optionsWithCORS = Object.assign(Object.assign({}, options), { cors });
         const jwtService = this.app.get(jwt_1.JwtService);
         const server = super.createIOServer(port, optionsWithCORS);
