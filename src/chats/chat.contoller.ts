@@ -1,4 +1,4 @@
-import { Req, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Get, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ControllerAuthGuard } from './controller-auth.guard';
@@ -10,6 +10,11 @@ import { JoinChatFields, RequestWithAuth } from 'src/types/types';
 @Controller('chats')
 export class ChatController {
   constructor(private chatService: ChatService) {}
+
+  @Get()
+  async get() {
+    console.log('OK');
+  }
 
   @Post()
   async create(@Body() createPollDto: Prisma.chatCreateInput) {

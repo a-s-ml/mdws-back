@@ -23,6 +23,9 @@ let ChatController = class ChatController {
     constructor(chatService) {
         this.chatService = chatService;
     }
+    async get() {
+        console.log('OK');
+    }
     async create(createPollDto) {
         return await this.chatService.createChat(createPollDto);
     }
@@ -38,6 +41,12 @@ let ChatController = class ChatController {
     }
 };
 exports.ChatController = ChatController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChatController.prototype, "get", null);
 __decorate([
     (0, common_3.Post)(),
     __param(0, (0, common_3.Body)()),
