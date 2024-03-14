@@ -7,17 +7,14 @@ import { SocketIOAdapter } from './socket-io-adapter';
 async function bootstrap() {
   const logger = new Logger('Main (main.ts)');
   const app = await NestFactory.create(AppModule);
-	app.setGlobalPrefix('mdws');
+  app.setGlobalPrefix('mdws');
 
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT'));
   const clientPort = parseInt(configService.get('CLIENT_PORT'));
 
   app.enableCors({
-    origin: [
-      `http://localhost:${clientPort}`,
-      new RegExp(`/^http:\/\/192\.168\.1\.([1-9]|[1-9]\d):${clientPort}$/`),
-    ],
+    origin: [`http://37.193.157.80`],
   });
   app.useWebSocketAdapter(new SocketIOAdapter(app, configService));
 
