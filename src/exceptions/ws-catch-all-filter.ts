@@ -4,12 +4,12 @@ import {
   Catch,
   ExceptionFilter,
 } from '@nestjs/common';
-import { SocketWithAuth } from 'src/chats/types';
 import {
   WsBadRequestException,
   WsTypeException,
   WsUnknownException,
 } from './ws-exceptions';
+import { SocketWithAuth } from 'src/types/types';
 
 @Catch()
 export class WsCatchAllFilter implements ExceptionFilter {

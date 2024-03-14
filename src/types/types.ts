@@ -32,11 +32,36 @@ export type Participant = {
   chat: number;
 };
 
+export type responseUserData = {
+  query_id?: string | null;
+  user: responseUser;
+  auth_date: string;
+};
+
+export type responseValidate = {
+  validate: boolean;
+  UserData: responseUserData;
+};
+
+export type responseUser = {
+  id: bigint;
+  first_name: string;
+  last_name: string;
+  username: string;
+  language_code: string;
+  allows_write_to_pm: boolean;
+};
+
 export type AuthPayload = {
   user: number;
   chat: number;
   name: string;
 };
+
+export class EventClass {
+  name: string;
+  description: string;
+}
 
 export type RequestWithAuth = Request & AuthPayload;
 export type SocketWithAuth = Socket & AuthPayload;

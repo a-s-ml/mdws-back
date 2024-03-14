@@ -13,10 +13,22 @@ exports.ChatService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const db_service_1 = require("../db/db.service");
+const event_emitter_1 = require("@nestjs/event-emitter");
+const types_1 = require("../types/types");
 let ChatService = class ChatService {
-    constructor(jwtService, dbService) {
+    constructor(jwtService, eventEmitter, dbService) {
         this.jwtService = jwtService;
+        this.eventEmitter = eventEmitter;
         this.dbService = dbService;
+    }
+    async createUser(fields) {
+        return await this.dbService.user.create({
+            data: {
+                tgid: fields.tgid,
+                type: fields.type,
+                name: fields.name,
+            },
+        });
     }
     async createChat(fields) {
         const chat = await this.dbService.chat.create({
@@ -88,11 +100,41 @@ let ChatService = class ChatService {
             },
         });
     }
+    async verificationExistenceUser(from) {
+        const checkUser = await this.userFindByTgid(from.id);
+        if (!checkUser) {
+            await this.createUser({
+                tgid: from.id,
+                type: 1,
+                name: from.username,
+            });
+            const event = new types_1.EventClass();
+            event.name = 'newUser';
+            event.description = `chat: #id${from.id}\nusername: @${from.username}`;
+            this.eventEmitter.emit('event', event);
+        }
+    }
+    async userFindByTgid(tgid) {
+        return await this.dbService.user.findUnique({
+            where: {
+                tgid,
+            },
+        });
+    }
+    async userUpdateByTgid(tgid, updateChatDto) {
+        return await this.dbService.user.update({
+            where: {
+                tgid,
+            },
+            data: updateChatDto,
+        });
+    }
 };
 exports.ChatService = ChatService;
 exports.ChatService = ChatService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [jwt_1.JwtService,
+        event_emitter_1.EventEmitter2,
         db_service_1.DbService])
 ], ChatService);
 //# sourceMappingURL=chat.service.js.map

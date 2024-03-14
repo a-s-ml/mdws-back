@@ -2,9 +2,9 @@ import { Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ControllerAuthGuard } from './controller-auth.guard';
-import { JoinChatFields, RequestWithAuth } from './types';
 import { Prisma } from '@prisma/client';
 import { ChatService } from './chat.service';
+import { JoinChatFields, RequestWithAuth } from 'src/types/types';
 
 @UsePipes(new ValidationPipe())
 @Controller('chats')

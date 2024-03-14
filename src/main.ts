@@ -7,6 +7,7 @@ import { SocketIOAdapter } from './socket-io-adapter';
 async function bootstrap() {
   const logger = new Logger('Main (main.ts)');
   const app = await NestFactory.create(AppModule);
+	app.setGlobalPrefix('mdws');
 
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get('PORT'));

@@ -10,12 +10,13 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const chat_module_1 = require("./chats/chat.module");
+const event_emitter_1 = require("@nestjs/event-emitter");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_1.ConfigModule.forRoot(), chat_module_1.ChatModule],
+        imports: [config_1.ConfigModule.forRoot(), event_emitter_1.EventEmitterModule.forRoot(), chat_module_1.ChatModule],
         controllers: [],
         providers: [],
     })

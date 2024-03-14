@@ -1,10 +1,4 @@
-import {
-  Logger,
-  UseFilters,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayInit,
   WebSocketGateway,
@@ -18,7 +12,7 @@ import {
 import { Namespace } from 'socket.io';
 import { WsCatchAllFilter } from 'src/exceptions/ws-catch-all-filter';
 import { ChatService } from './chat.service';
-import { SocketWithAuth } from './types';
+import { SocketWithAuth } from 'src/types/types';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(new WsCatchAllFilter())
@@ -100,9 +94,11 @@ export class ChatGateway
     const updatedPoll = await this.chatService.addMessage({
       chat: client.chat,
       user: client.user,
-      text: text,
+      text,
     });
 
-    this.io.to(String(client.chat)).emit('chat_updated', updatedPoll);
+    const roomName = client.name;
+
+    this.io.to(roomName).emit('chat_updated', updatedPoll);
   }
 }

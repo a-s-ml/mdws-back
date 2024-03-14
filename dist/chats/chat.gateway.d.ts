@@ -1,7 +1,7 @@
 import { OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Namespace } from 'socket.io';
 import { ChatService } from './chat.service';
-import { SocketWithAuth } from './types';
+import { SocketWithAuth } from 'src/types/types';
 export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     private readonly chatService;
     private readonly logger;

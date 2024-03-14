@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RequestWithAuth } from './types';
+import { RequestWithAuth } from 'src/types/types';
 
 @Injectable()
 export class ControllerAuthGuard implements CanActivate {

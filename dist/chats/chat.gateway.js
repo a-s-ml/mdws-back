@@ -62,9 +62,10 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         const updatedPoll = await this.chatService.addMessage({
             chat: client.chat,
             user: client.user,
-            text: text,
+            text,
         });
-        this.io.to(String(client.chat)).emit('chat_updated', updatedPoll);
+        const roomName = client.name;
+        this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
 };
 exports.ChatGateway = ChatGateway;

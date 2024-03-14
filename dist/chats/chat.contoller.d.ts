@@ -1,6 +1,6 @@
-import { JoinChatFields, RequestWithAuth } from './types';
 import { Prisma } from '@prisma/client';
 import { ChatService } from './chat.service';
+import { JoinChatFields, RequestWithAuth } from 'src/types/types';
 export declare class ChatController {
     private chatService;
     constructor(chatService: ChatService);

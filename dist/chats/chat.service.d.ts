@@ -1,11 +1,20 @@
 import { JwtService } from '@nestjs/jwt';
 import { DbService } from 'src/db/db.service';
 import { Prisma } from '@prisma/client';
-import { Chat, JoinChatFields } from './types';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserTg } from 'src/types/tg-types';
+import { JoinChatFields, Chat } from 'src/types/types';
 export declare class ChatService {
     private readonly jwtService;
+    private eventEmitter;
     private dbService;
-    constructor(jwtService: JwtService, dbService: DbService);
+    constructor(jwtService: JwtService, eventEmitter: EventEmitter2, dbService: DbService);
+    createUser(fields: Prisma.userCreateInput): Promise<{
+        id: number;
+        tgid: number;
+        type: number;
+        name: string;
+    }>;
     createChat(fields: Prisma.chatCreateInput): Promise<{
         chat: {
             id: number;
@@ -42,5 +51,18 @@ export declare class ChatService {
         user: number;
         chat: number;
         text: string;
+    }>;
+    verificationExistenceUser(from: UserTg): Promise<void>;
+    userFindByTgid(tgid: number): Promise<{
+        id: number;
+        tgid: number;
+        type: number;
+        name: string;
+    }>;
+    userUpdateByTgid(tgid: number, updateChatDto: Prisma.chatUpdateInput): Promise<{
+        id: number;
+        tgid: number;
+        type: number;
+        name: string;
     }>;
 }

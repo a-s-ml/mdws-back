@@ -8,6 +8,7 @@ const socket_io_adapter_1 = require("./socket-io-adapter");
 async function bootstrap() {
     const logger = new common_1.Logger('Main (main.ts)');
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.setGlobalPrefix('mdws');
     const configService = app.get(config_1.ConfigService);
     const port = parseInt(configService.get('PORT'));
     const clientPort = parseInt(configService.get('CLIENT_PORT'));
