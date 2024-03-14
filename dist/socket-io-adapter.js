@@ -12,12 +12,8 @@ class SocketIOAdapter extends platform_socket_io_1.IoAdapter {
         this.logger = new common_1.Logger(SocketIOAdapter.name);
     }
     createIOServer(port, options) {
-        const cors = {
-            origin: [],
-        };
-        const optionsWithCORS = Object.assign(Object.assign({}, options), { cors });
         const jwtService = this.app.get(jwt_1.JwtService);
-        const server = super.createIOServer(port, optionsWithCORS);
+        const server = super.createIOServer(port);
         server.of('chat').use(createTokenMiddleware(jwtService, this.logger));
         return server;
     }
