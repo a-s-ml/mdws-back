@@ -23,8 +23,8 @@ let ChatController = class ChatController {
     constructor(chatService) {
         this.chatService = chatService;
     }
-    async get() {
-        console.log('OK');
+    initData(initData) {
+        return this.chatService.validateUser(initData);
     }
     async create(createPollDto) {
         return await this.chatService.createChat(createPollDto);
@@ -42,11 +42,12 @@ let ChatController = class ChatController {
 };
 exports.ChatController = ChatController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('validateUser/:initData'),
+    __param(0, (0, common_1.Param)('initData')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ChatController.prototype, "get", null);
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "initData", null);
 __decorate([
     (0, common_3.Post)(),
     __param(0, (0, common_3.Body)()),

@@ -15,6 +15,7 @@ const jwt_1 = require("@nestjs/jwt");
 const db_service_1 = require("../db/db.service");
 const event_emitter_1 = require("@nestjs/event-emitter");
 const types_1 = require("../types/types");
+const crypto_1 = require("crypto");
 let ChatService = class ChatService {
     constructor(jwtService, eventEmitter, dbService) {
         this.jwtService = jwtService;
@@ -128,6 +129,34 @@ let ChatService = class ChatService {
             },
             data: updateChatDto,
         });
+    }
+    async validateUser(initData) {
+        var _a;
+        const urlParams = new URLSearchParams(initData);
+        const hash = urlParams.get('hash');
+        urlParams.delete('hash');
+        urlParams.sort();
+        const UserData = {
+            query_id: urlParams.get('query_id'),
+            user: JSON.parse(urlParams.get('user')),
+            auth_date: urlParams.get('auth_date'),
+        };
+        let dataCheckString = '';
+        for (const [key, value] of urlParams.entries()) {
+            dataCheckString += `${key}=${value}\n`;
+        }
+        dataCheckString = dataCheckString.slice(0, -1);
+        const secret = (0, crypto_1.createHmac)('sha256', 'WebAppData').update((_a = process.env.TOKEN) !== null && _a !== void 0 ? _a : '');
+        const calculatedHash = (0, crypto_1.createHmac)('sha256', secret.digest())
+            .update(dataCheckString)
+            .digest('hex');
+        const validate = calculatedHash === hash;
+        let response;
+        const event = new types_1.EventClass();
+        event.name = 'webAppValidate';
+        event.description = `chat: #id${UserData.user.id}\nvalidate: #${String(validate)}`;
+        this.eventEmitter.emit('event', event);
+        return (response = { validate, UserData });
     }
 };
 exports.ChatService = ChatService;

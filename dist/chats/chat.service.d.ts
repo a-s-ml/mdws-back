@@ -3,7 +3,7 @@ import { DbService } from 'src/db/db.service';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserTg } from 'src/types/tg-types';
-import { JoinChatFields, Chat } from 'src/types/types';
+import { JoinChatFields, Chat, responseUserData } from 'src/types/types';
 export declare class ChatService {
     private readonly jwtService;
     private eventEmitter;
@@ -64,5 +64,9 @@ export declare class ChatService {
         tgid: number;
         type: number;
         name: string;
+    }>;
+    validateUser(initData: string): Promise<{
+        validate: boolean;
+        UserData: responseUserData;
     }>;
 }

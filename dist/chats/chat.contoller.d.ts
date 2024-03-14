@@ -4,7 +4,10 @@ import { JoinChatFields, RequestWithAuth } from 'src/types/types';
 export declare class ChatController {
     private chatService;
     constructor(chatService: ChatService);
-    get(): Promise<void>;
+    initData(initData: string): Promise<{
+        validate: boolean;
+        UserData: import("src/types/types").responseUserData;
+    }>;
     create(createPollDto: Prisma.chatCreateInput): Promise<{
         chat: {
             id: number;

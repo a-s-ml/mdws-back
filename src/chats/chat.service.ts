@@ -4,7 +4,8 @@ import { DbService } from 'src/db/db.service';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserTg } from 'src/types/tg-types';
-import { JoinChatFields, Chat, EventClass } from 'src/types/types';
+import { JoinChatFields, Chat, EventClass, responseValidate, responseUserData } from 'src/types/types';
+import { createHmac } from 'crypto';
 
 @Injectable()
 export class ChatService {
@@ -141,5 +142,44 @@ export class ChatService {
       },
       data: updateChatDto,
     });
+  }
+
+  async validateUser(initData: string) {
+    const urlParams = new URLSearchParams(initData);
+    const hash = urlParams.get('hash');
+    urlParams.delete('hash');
+    urlParams.sort();
+
+    const UserData: responseUserData = {
+      query_id: urlParams.get('query_id'),
+      user: JSON.parse(urlParams.get('user')),
+      auth_date: urlParams.get('auth_date'),
+    };
+
+    let dataCheckString = '';
+    for (const [key, value] of urlParams.entries()) {
+      dataCheckString += `${key}=${value}\n`;
+    }
+    dataCheckString = dataCheckString.slice(0, -1);
+
+    const secret = createHmac('sha256', 'WebAppData').update(
+      process.env.TOKEN ?? '',
+    );
+    const calculatedHash = createHmac('sha256', secret.digest())
+      .update(dataCheckString)
+      .digest('hex');
+
+    const validate = calculatedHash === hash;
+
+    let response: responseValidate;
+
+    const event = new EventClass();
+    event.name = 'webAppValidate';
+    event.description = `chat: #id${UserData.user.id}\nvalidate: #${String(
+      validate,
+    )}`;
+    this.eventEmitter.emit('event', event);
+
+    return (response = { validate, UserData });
   }
 }

@@ -1,4 +1,4 @@
-import { Get, Req, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Get, Param, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ControllerAuthGuard } from './controller-auth.guard';
@@ -11,9 +11,9 @@ import { JoinChatFields, RequestWithAuth } from 'src/types/types';
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
-  @Get()
-  async get() {
-    console.log('OK');
+  @Get('validateUser/:initData')
+  initData(@Param('initData') initData: string) {
+    return this.chatService.validateUser(initData);
   }
 
   @Post()
