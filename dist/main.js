@@ -9,7 +9,7 @@ async function bootstrap() {
     app.setGlobalPrefix('mdws');
     const configService = app.get(config_1.ConfigService);
     app.useWebSocketAdapter(new socket_io_adapter_1.SocketIOAdapter(app, configService));
-    await app.listen(4000);
+    await app.listen(3000);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
