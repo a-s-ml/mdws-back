@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = "mysql://node_back:8hkH7xa5T@90.156.203.57:3306/md"
+  relationMode = "prisma"
+}
+
+model message {
+  id   Int    @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  user Int?
+  chat Int?
+  text String @db.VarChar(255)
+
+  @@index([chat], map: "chat")
+  @@index([user], map: "user")
+}
+
+model type_chat {
+  id   Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  name String? @db.VarChar(255)
+}
+
+model type_user {
+  id   Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  name String? @db.VarChar(255)
+}
+
+model chat {
+  id    Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  name  String? @default("0") @db.VarChar(255)
+  admin Int?
+  type  Int?
+
+  @@index([admin], map: "admin")
+  @@index([type], map: "type")
+}
+
+model user {
+  id   Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  tgid Int?    @unique(map: "tgid_UNIQUE")
+  type Int?
+  name String? @db.VarChar(255)
+
+  @@index([type], map: "type")
+}
+
+model participant {
+  id   Int  @unique(map: "id_UNIQUE") @default(autoincrement())
+  user Int?
+  chat Int?
+
+  @@index([chat], map: "chat")
+  @@index([user], map: "user")
+}
