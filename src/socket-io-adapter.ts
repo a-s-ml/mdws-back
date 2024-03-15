@@ -18,7 +18,7 @@ export class SocketIOAdapter extends IoAdapter {
     const jwtService = this.app.get(JwtService);
     const server: Server = super.createIOServer(port);
 
-    server.of('mdws/chat').use(createTokenMiddleware(jwtService, this.logger));
+    server.of('chat').use(createTokenMiddleware(jwtService, this.logger));
 
     return server;
   }

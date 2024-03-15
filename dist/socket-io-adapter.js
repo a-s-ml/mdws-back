@@ -14,7 +14,7 @@ class SocketIOAdapter extends platform_socket_io_1.IoAdapter {
     createIOServer(port, options) {
         const jwtService = this.app.get(jwt_1.JwtService);
         const server = super.createIOServer(port);
-        server.of('mdws/chat').use(createTokenMiddleware(jwtService, this.logger));
+        server.of('chat').use(createTokenMiddleware(jwtService, this.logger));
         return server;
     }
 }
