@@ -8,7 +8,7 @@ exports.jwtModule = jwt_1.JwtModule.registerAsync({
     useFactory: async (configService) => ({
         secret: configService.get('JWT_SECRET'),
         signOptions: {
-            expiresIn: parseInt(configService.get('POLL_DURATION')),
+            expiresIn: parseInt(configService.get('DURATION')),
         },
     }),
     inject: [config_1.ConfigService],
