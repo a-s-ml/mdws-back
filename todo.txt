@@ -1,0 +1,2 @@
+Соединение с ws по подпапке /mdws в файле socket-io-adapter.ts
+Guard контроллера по валидации initData в validate.service
