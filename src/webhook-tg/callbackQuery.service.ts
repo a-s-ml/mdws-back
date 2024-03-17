@@ -32,7 +32,7 @@ export class CallbackQueryService {
       event.description = `chat: #id${message.from.id}\n@${message.from.username}\ntext: #${String(message.text).slice(1)}`;
       this.eventEmitter.emit('event', event);
       await this.chatService.verificationExistenceUser({
-        id: message.from.id as unknown as bigint,
+        id: message.from.id,
         first_name: message.from.first_name,
         last_name: message.from.last_name,
         username: message.from.username,

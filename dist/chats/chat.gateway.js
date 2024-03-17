@@ -55,7 +55,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
     async removeParticipant(id, client) {
         const updatedPoll = await this.chatService.removeParticipant(client.chat, client.user);
         if (updatedPoll) {
-            this.io.to(String(client.chat)).emit('chat_updated', updatedPoll);
+            this.io.to(String(client.chat)).emit('chat_updated', {});
         }
     }
     async message(text, client) {

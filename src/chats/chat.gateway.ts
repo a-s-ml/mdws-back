@@ -63,7 +63,8 @@ export class ChatGateway
 
   async handleDisconnect(client: SocketWithAuth) {
     const { chat, user } = client;
-    const updatedPoll: Prisma.BatchPayload = await this.chatService.removeParticipant(chat, user);
+    const updatedPoll: Prisma.BatchPayload =
+      await this.chatService.removeParticipant(chat, user);
 
     const roomName = client.name;
 
@@ -83,7 +84,7 @@ export class ChatGateway
     );
 
     if (updatedPoll) {
-      this.io.to(String(client.chat)).emit('chat_updated', updatedPoll);
+      this.io.to(String(client.chat)).emit('chat_updated', {});
     }
   }
 

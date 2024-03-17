@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { DbService } from 'src/db/db.service';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { UserTg } from 'src/types/tg-types';
 import {
   JoinChatFields,
   Chat,
@@ -121,10 +120,10 @@ export class ChatService {
   }
 
   async verificationExistenceUser(from: responseUser) {
-    const checkUser = await this.userFindByTgid(from.id as unknown as number);
+    const checkUser = await this.userFindByTgid(from.id);
     if (!checkUser) {
       const appId = await this.createUser({
-        tgid: from.id as unknown as number,
+        tgid: from.id,
         type: 1,
         name: from.username,
       });
@@ -191,10 +190,10 @@ export class ChatService {
     )}`;
     this.eventEmitter.emit('event', event);
 
-//    if (validate) {
-      const appId = await this.verificationExistenceUser(UserData.user);
-      UserData.appUser = appId.id;
-//    }
+    //    if (validate) {
+    const appId = await this.verificationExistenceUser(UserData.user);
+    UserData.appUser = appId.id;
+    //    }
 
     return (response = { validate, UserData });
   }
