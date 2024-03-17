@@ -31,6 +31,7 @@ export type Message = {
   id: number;
   user: number;
   chat: number;
+  text: string;
 };
 
 export type Participant = {
