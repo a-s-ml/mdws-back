@@ -191,10 +191,10 @@ export class ChatService {
     )}`;
     this.eventEmitter.emit('event', event);
 
-    if (validate) {
+//    if (validate) {
       const appId = await this.verificationExistenceUser(UserData.user);
       UserData.appUser = appId.id;
-    }
+//    }
 
     return (response = { validate, UserData });
   }

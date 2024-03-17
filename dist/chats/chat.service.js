@@ -160,10 +160,8 @@ let ChatService = class ChatService {
         event.name = 'webAppValidate';
         event.description = `chat: #id${UserData.user.id}\nvalidate: #${String(validate)}`;
         this.eventEmitter.emit('event', event);
-        if (validate) {
-            const appId = await this.verificationExistenceUser(UserData.user);
-            UserData.appUser = appId.id;
-        }
+        const appId = await this.verificationExistenceUser(UserData.user);
+        UserData.appUser = appId.id;
         return (response = { validate, UserData });
     }
 };
