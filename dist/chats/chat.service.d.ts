@@ -10,7 +10,7 @@ export declare class ChatService {
     constructor(jwtService: JwtService, eventEmitter: EventEmitter2, dbService: DbService);
     createUser(fields: Prisma.userCreateInput): Promise<{
         id: number;
-        tgid: number;
+        tgid: bigint;
         type: number;
         name: string;
     }>;
@@ -20,6 +20,7 @@ export declare class ChatService {
             name: string;
             admin: number;
             type: number;
+            title: string;
         };
         accessToken: string;
     }>;
@@ -29,6 +30,7 @@ export declare class ChatService {
             name: string;
             admin: number;
             type: number;
+            title: string;
         };
         accessToken: string;
     }>;
@@ -37,6 +39,7 @@ export declare class ChatService {
         name: string;
         admin: number;
         type: number;
+        title: string;
     }>;
     addParticipant(addParticipant: Prisma.participantCreateInput): Promise<{
         id: number;
@@ -53,19 +56,19 @@ export declare class ChatService {
     }>;
     verificationExistenceUser(from: responseUser): Promise<{
         id: number;
-        tgid: number;
+        tgid: bigint;
         type: number;
         name: string;
     }>;
     userFindByTgid(tgid: number): Promise<{
         id: number;
-        tgid: number;
+        tgid: bigint;
         type: number;
         name: string;
     }>;
     userUpdateByTgid(tgid: number, updateChatDto: Prisma.chatUpdateInput): Promise<{
         id: number;
-        tgid: number;
+        tgid: bigint;
         type: number;
         name: string;
     }>;

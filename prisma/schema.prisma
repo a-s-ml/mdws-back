@@ -30,9 +30,10 @@ model type_user {
 
 model chat {
   id    Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  name  String? @default("0") @db.VarChar(255)
+  name  String? @default("default") @db.VarChar(255)
   admin Int?
   type  Int?
+  title String? @db.VarChar(255)
 
   @@index([admin], map: "admin")
   @@index([type], map: "type")
@@ -40,7 +41,7 @@ model chat {
 
 model user {
   id   Int     @id @unique(map: "id_UNIQUE") @default(autoincrement())
-  tgid Int?    @unique(map: "tgid_UNIQUE")
+  tgid BigInt? @unique(map: "tgid_UNIQUE")
   type Int?
   name String? @db.VarChar(255)
 

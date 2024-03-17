@@ -14,6 +14,7 @@ export declare class ChatController {
             name: string;
             admin: number;
             type: number;
+            title: string;
         };
         accessToken: string;
     }>;
@@ -23,6 +24,7 @@ export declare class ChatController {
             name: string;
             admin: number;
             type: number;
+            title: string;
         };
         accessToken: string;
     }>;
@@ -31,5 +33,6 @@ export declare class ChatController {
         name: string;
         admin: number;
         type: number;
+        title: string;
     }>;
 }
