@@ -125,6 +125,13 @@ let ChatService = class ChatService {
             },
         });
     }
+    async userFindById(id) {
+        return await this.dbService.user.findUnique({
+            where: {
+                id,
+            },
+        });
+    }
     async userUpdateByTgid(tgid, updateChatDto) {
         return await this.dbService.user.update({
             where: {

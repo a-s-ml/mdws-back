@@ -13,9 +13,16 @@ export type Chat = {
   type: number;
 };
 
+export type UpdatedPoll = {
+  type: string;
+  user: User;
+  chat: Chat;
+  text: Message | null;
+};
+
 export type User = {
   id: number;
-  tgid: number;
+  tgid: bigint;
   name: string;
   type: number;
 };

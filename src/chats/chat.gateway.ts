@@ -12,7 +12,7 @@ import {
 import { Namespace } from 'socket.io';
 import { WsCatchAllFilter } from 'src/exceptions/ws-catch-all-filter';
 import { ChatService } from './chat.service';
-import { SocketWithAuth } from 'src/types/types';
+import { SocketWithAuth, UpdatedPoll } from 'src/types/types';
 import { Prisma } from '@prisma/client';
 
 @UsePipes(new ValidationPipe())
@@ -53,22 +53,40 @@ export class ChatGateway
       `Total clients connected to room '${roomName}': ${connectedClients}`,
     );
 
-    const updatedPoll = await this.chatService.addParticipant({
+    const addParticipant = await this.chatService.addParticipant({
       chat: client.chat,
       user: client.user,
     });
+
+    let updatedPoll: UpdatedPoll;
+    const dbchat = await this.chatService.getChat(client.chat);
+    const dbuser = await this.chatService.userFindByTgid(client.user);
+
+    updatedPoll.type = 'connect';
+    updatedPoll.chat = dbchat;
+    updatedPoll.user = dbuser;
+    updatedPoll.text = null;
 
     this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
   }
 
   async handleDisconnect(client: SocketWithAuth) {
     const { chat, user } = client;
-    const updatedPoll: Prisma.BatchPayload =
+    const removeParticipant: Prisma.BatchPayload =
       await this.chatService.removeParticipant(chat, user);
 
     const roomName = client.name;
 
-    if (updatedPoll) {
+    if (removeParticipant) {
+      let updatedPoll: UpdatedPoll;
+      const dbchat = await this.chatService.getChat(chat);
+      const dbuser = await this.chatService.userFindByTgid(user);
+  
+      updatedPoll.type = 'disconnect';
+      updatedPoll.chat = dbchat;
+      updatedPoll.user = dbuser;
+      updatedPoll.text = null;
+      
       this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
   }
@@ -93,13 +111,22 @@ export class ChatGateway
     @MessageBody() text: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    const updatedPoll = await this.chatService.addMessage({
+    const addMessage = await this.chatService.addMessage({
       chat: client.chat,
       user: client.user,
       text,
     });
 
     const roomName = client.name;
+
+    let updatedPoll: UpdatedPoll;
+    const dbchat = await this.chatService.getChat(client.chat);
+    const dbuser = await this.chatService.userFindByTgid(client.user);
+
+    updatedPoll.type = 'message';
+    updatedPoll.chat = dbchat;
+    updatedPoll.user = dbuser;
+    updatedPoll.text = addMessage;
 
     this.io.to(roomName).emit('chat_updated', updatedPoll);
   }

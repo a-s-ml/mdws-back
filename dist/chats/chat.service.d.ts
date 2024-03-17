@@ -66,6 +66,12 @@ export declare class ChatService {
         type: number;
         name: string;
     }>;
+    userFindById(id: number): Promise<{
+        id: number;
+        tgid: bigint;
+        type: number;
+        name: string;
+    }>;
     userUpdateByTgid(tgid: number, updateChatDto: Prisma.chatUpdateInput): Promise<{
         id: number;
         tgid: bigint;

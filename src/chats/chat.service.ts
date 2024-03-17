@@ -144,6 +144,14 @@ export class ChatService {
     });
   }
 
+  async userFindById(id: number) {
+    return await this.dbService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   async userUpdateByTgid(tgid: number, updateChatDto: Prisma.chatUpdateInput) {
     return await this.dbService.user.update({
       where: {

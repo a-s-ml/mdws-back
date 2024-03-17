@@ -38,17 +38,31 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         const connectedClients = (_c = (_b = (_a = this.io.adapter.rooms) === null || _a === void 0 ? void 0 : _a.get(roomName)) === null || _b === void 0 ? void 0 : _b.size) !== null && _c !== void 0 ? _c : 0;
         this.logger.debug(`userID: ${client.user} joined room with name: ${roomName}`);
         this.logger.debug(`Total clients connected to room '${roomName}': ${connectedClients}`);
-        const updatedPoll = await this.chatService.addParticipant({
+        const addParticipant = await this.chatService.addParticipant({
             chat: client.chat,
             user: client.user,
         });
+        let updatedPoll;
+        const dbchat = await this.chatService.getChat(client.chat);
+        const dbuser = await this.chatService.userFindByTgid(client.user);
+        updatedPoll.type = 'connect';
+        updatedPoll.chat = dbchat;
+        updatedPoll.user = dbuser;
+        updatedPoll.text = null;
         this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
     }
     async handleDisconnect(client) {
         const { chat, user } = client;
-        const updatedPoll = await this.chatService.removeParticipant(chat, user);
+        const removeParticipant = await this.chatService.removeParticipant(chat, user);
         const roomName = client.name;
-        if (updatedPoll) {
+        if (removeParticipant) {
+            let updatedPoll;
+            const dbchat = await this.chatService.getChat(chat);
+            const dbuser = await this.chatService.userFindByTgid(user);
+            updatedPoll.type = 'disconnect';
+            updatedPoll.chat = dbchat;
+            updatedPoll.user = dbuser;
+            updatedPoll.text = null;
             this.io.to(roomName).emit('chat_updated', updatedPoll);
         }
     }
@@ -59,12 +73,19 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         }
     }
     async message(text, client) {
-        const updatedPoll = await this.chatService.addMessage({
+        const addMessage = await this.chatService.addMessage({
             chat: client.chat,
             user: client.user,
             text,
         });
         const roomName = client.name;
+        let updatedPoll;
+        const dbchat = await this.chatService.getChat(client.chat);
+        const dbuser = await this.chatService.userFindByTgid(client.user);
+        updatedPoll.type = 'message';
+        updatedPoll.chat = dbchat;
+        updatedPoll.user = dbuser;
+        updatedPoll.text = addMessage;
         this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
 };
