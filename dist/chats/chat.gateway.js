@@ -19,6 +19,8 @@ const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
 const ws_catch_all_filter_1 = require("../exceptions/ws-catch-all-filter");
 const chat_service_1 = require("./chat.service");
+const emailToSocketIdMap = new Map();
+const socketidToEmailMap = new Map();
 let ChatGateway = ChatGateway_1 = class ChatGateway {
     constructor(chatService) {
         this.chatService = chatService;
@@ -50,10 +52,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             user: dbuser,
             text: null,
         };
-        const email = 'sdgsd';
-        const room = roomName;
         this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
-        this.io.to(String(roomName)).emit('room:join', { email, room });
     }
     async handleDisconnect(client) {
         const { chat, user } = client;
@@ -94,6 +93,32 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         };
         this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
+    async roomjoin(data, client) {
+        const { email, room } = data;
+        emailToSocketIdMap.set(email, client.id);
+        socketidToEmailMap.set(client.id, email);
+        this.io.to(room).emit('user:joined', { email, id: client.id });
+        client.join(room);
+        this.io.to(client.id).emit('room:join', data);
+    }
+    async usercall(data, client) {
+        const { to, offer } = data;
+        this.io.to(to).emit('incomming:call', { from: client.id, offer });
+    }
+    async callaccepted(data, client) {
+        const { to, ans } = data;
+        this.io.to(to).emit('call:accepted', { from: client.id, ans });
+    }
+    async peernegoneeded(data, client) {
+        const { to, offer } = data;
+        console.log('peer:nego:needed', offer);
+        this.io.to(to).emit('peer:nego:needed', { from: client.id, offer });
+    }
+    async peernegodone(data, client) {
+        const { to, ans } = data;
+        console.log('peer:nego:done', ans);
+        this.io.to(to).emit('peer:nego:final', { from: client.id, ans });
+    }
 };
 exports.ChatGateway = ChatGateway;
 __decorate([
@@ -116,6 +141,46 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "message", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('room:join'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "roomjoin", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('user:call'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "usercall", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('call:accepted'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "callaccepted", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('peer:nego:needed'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "peernegoneeded", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('peer:nego:done'),
+    __param(0, (0, websockets_1.MessageBody)()),
+    __param(1, (0, websockets_1.ConnectedSocket)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "peernegodone", null);
 exports.ChatGateway = ChatGateway = ChatGateway_1 = __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     (0, common_1.UseFilters)(new ws_catch_all_filter_1.WsCatchAllFilter()),

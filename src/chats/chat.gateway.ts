@@ -15,6 +15,14 @@ import { ChatService } from './chat.service';
 import { SocketWithAuth, UpdatedPoll } from 'src/types/types';
 import { Prisma } from '@prisma/client';
 
+type joinRoomData = {
+  email: string;
+  room: string;
+};
+
+const emailToSocketIdMap = new Map();
+const socketidToEmailMap = new Map();
+
 @UsePipes(new ValidationPipe())
 @UseFilters(new WsCatchAllFilter())
 @WebSocketGateway({
@@ -68,11 +76,7 @@ export class ChatGateway
       text: null,
     };
 
-    const email = 'sdgsd';
-    const room = roomName;
-
     this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
-    this.io.to(String(roomName)).emit('room:join', { email, room });
   }
 
   async handleDisconnect(client: SocketWithAuth) {
@@ -136,5 +140,56 @@ export class ChatGateway
     };
 
     this.io.to(roomName).emit('chat_updated', updatedPoll);
+  }
+
+  @SubscribeMessage('room:join')
+  async roomjoin(
+    @MessageBody() data: joinRoomData,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    const { email, room } = data;
+    emailToSocketIdMap.set(email, client.id);
+    socketidToEmailMap.set(client.id, email);
+    this.io.to(room).emit('user:joined', { email, id: client.id });
+    client.join(room);
+    this.io.to(client.id).emit('room:join', data);
+  }
+
+  @SubscribeMessage('user:call')
+  async usercall(
+    @MessageBody() data: joinRoomData,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    const { to, offer }: any = data;
+    this.io.to(to).emit('incomming:call', { from: client.id, offer });
+  }
+
+  @SubscribeMessage('call:accepted')
+  async callaccepted(
+    @MessageBody() data: joinRoomData,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    const { to, ans }: any = data;
+    this.io.to(to).emit('call:accepted', { from: client.id, ans });
+  }
+
+  @SubscribeMessage('peer:nego:needed')
+  async peernegoneeded(
+    @MessageBody() data: joinRoomData,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    const { to, offer }: any = data;
+    console.log('peer:nego:needed', offer);
+    this.io.to(to).emit('peer:nego:needed', { from: client.id, offer });
+  }
+
+  @SubscribeMessage('peer:nego:done')
+  async peernegodone(
+    @MessageBody() data: any,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    const { to, ans }: any = data;
+    console.log('peer:nego:done', ans);
+    this.io.to(to).emit('peer:nego:final', { from: client.id, ans });
   }
 }
