@@ -68,7 +68,11 @@ export class ChatGateway
       text: null,
     };
 
+    const email = 'sdgsd';
+    const room = roomName;
+
     this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
+    this.io.to(String(roomName)).emit('room:join', { email, room });
   }
 
   async handleDisconnect(client: SocketWithAuth) {

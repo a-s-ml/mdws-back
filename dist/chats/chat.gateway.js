@@ -50,7 +50,10 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             user: dbuser,
             text: null,
         };
+        const email = 'sdgsd';
+        const room = roomName;
         this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
+        this.io.to(String(roomName)).emit('room:join', { email, room });
     }
     async handleDisconnect(client) {
         const { chat, user } = client;
