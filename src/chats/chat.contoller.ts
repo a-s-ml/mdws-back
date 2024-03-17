@@ -18,7 +18,7 @@ export class ChatController {
 
   @Get('messages/:chat')
   messages(@Param('chat') chat: number) {
-    return this.chatService.getMessages(chat);
+    return this.chatService.getMessages(+chat);
   }
 
   @Post()

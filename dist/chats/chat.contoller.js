@@ -27,7 +27,7 @@ let ChatController = class ChatController {
         return this.chatService.validateUser(initData);
     }
     messages(chat) {
-        return this.chatService.getMessages(chat);
+        return this.chatService.getMessages(+chat);
     }
     async create(createPollDto) {
         return await this.chatService.createChat(createPollDto);
