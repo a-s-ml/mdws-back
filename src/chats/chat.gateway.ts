@@ -58,14 +58,15 @@ export class ChatGateway
       user: client.user,
     });
 
-    let updatedPoll: UpdatedPoll;
     const dbchat = await this.chatService.getChat(client.chat);
     const dbuser = await this.chatService.userFindByTgid(client.user);
 
-    updatedPoll.type = 1;
-    updatedPoll.chat = dbchat;
-    updatedPoll.user = dbuser;
-    updatedPoll.text = null;
+    const updatedPoll: UpdatedPoll = {
+      type: 'connect',
+      chat: dbchat,
+      user: dbuser,
+      text: null,
+    };
 
     this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
   }
@@ -78,15 +79,16 @@ export class ChatGateway
     const roomName = client.name;
 
     if (removeParticipant) {
-      let updatedPoll: UpdatedPoll;
       const dbchat = await this.chatService.getChat(chat);
       const dbuser = await this.chatService.userFindByTgid(user);
-  
-      updatedPoll.type = 2;
-      updatedPoll.chat = dbchat;
-      updatedPoll.user = dbuser;
-      updatedPoll.text = null;
-      
+
+      const updatedPoll: UpdatedPoll = {
+        type: 'disconnect',
+        chat: dbchat,
+        user: dbuser,
+        text: null,
+      };
+
       this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
   }
@@ -119,14 +121,15 @@ export class ChatGateway
 
     const roomName = client.name;
 
-    let updatedPoll: UpdatedPoll;
     const dbchat = await this.chatService.getChat(client.chat);
     const dbuser = await this.chatService.userFindByTgid(client.user);
 
-    updatedPoll.type = 3;
-    updatedPoll.chat = dbchat;
-    updatedPoll.user = dbuser;
-    updatedPoll.text = addMessage;
+    const updatedPoll: UpdatedPoll = {
+      type: 'message',
+      chat: dbchat,
+      user: dbuser,
+      text: addMessage,
+    };
 
     this.io.to(roomName).emit('chat_updated', updatedPoll);
   }

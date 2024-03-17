@@ -42,13 +42,14 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             chat: client.chat,
             user: client.user,
         });
-        let updatedPoll;
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindByTgid(client.user);
-        updatedPoll.type = 1;
-        updatedPoll.chat = dbchat;
-        updatedPoll.user = dbuser;
-        updatedPoll.text = null;
+        const updatedPoll = {
+            type: 'connect',
+            chat: dbchat,
+            user: dbuser,
+            text: null,
+        };
         this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
     }
     async handleDisconnect(client) {
@@ -56,13 +57,14 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         const removeParticipant = await this.chatService.removeParticipant(chat, user);
         const roomName = client.name;
         if (removeParticipant) {
-            let updatedPoll;
             const dbchat = await this.chatService.getChat(chat);
             const dbuser = await this.chatService.userFindByTgid(user);
-            updatedPoll.type = 2;
-            updatedPoll.chat = dbchat;
-            updatedPoll.user = dbuser;
-            updatedPoll.text = null;
+            const updatedPoll = {
+                type: 'disconnect',
+                chat: dbchat,
+                user: dbuser,
+                text: null,
+            };
             this.io.to(roomName).emit('chat_updated', updatedPoll);
         }
     }
@@ -79,13 +81,14 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             text,
         });
         const roomName = client.name;
-        let updatedPoll;
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindByTgid(client.user);
-        updatedPoll.type = 3;
-        updatedPoll.chat = dbchat;
-        updatedPoll.user = dbuser;
-        updatedPoll.text = addMessage;
+        const updatedPoll = {
+            type: 'message',
+            chat: dbchat,
+            user: dbuser,
+            text: addMessage,
+        };
         this.io.to(roomName).emit('chat_updated', updatedPoll);
     }
 };
