@@ -33,6 +33,7 @@ export type Participant = {
 };
 
 export type responseUserData = {
+  appUser: number;
   query_id?: string | null;
   user: responseUser;
   auth_date: string;

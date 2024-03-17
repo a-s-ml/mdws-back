@@ -78,12 +78,13 @@ let ChatService = class ChatService {
         return await this.dbService.participant.create({ data: addParticipant });
     }
     async removeParticipant(from, user) {
-        return await this.dbService.participant.deleteMany({
+        const res = await this.dbService.participant.deleteMany({
             where: {
                 chat: from,
                 user: user,
             },
         });
+        return res;
     }
     async getChat(id) {
         return this.dbService.chat.findUnique({
@@ -104,7 +105,7 @@ let ChatService = class ChatService {
     async verificationExistenceUser(from) {
         const checkUser = await this.userFindByTgid(from.id);
         if (!checkUser) {
-            await this.createUser({
+            const appId = await this.createUser({
                 tgid: from.id,
                 type: 1,
                 name: from.username,
@@ -113,7 +114,9 @@ let ChatService = class ChatService {
             event.name = 'newUser';
             event.description = `chat: #id${from.id}\nusername: @${from.username}`;
             this.eventEmitter.emit('event', event);
+            return appId;
         }
+        return checkUser;
     }
     async userFindByTgid(tgid) {
         return await this.dbService.user.findUnique({
@@ -137,6 +140,7 @@ let ChatService = class ChatService {
         urlParams.delete('hash');
         urlParams.sort();
         const UserData = {
+            appUser: null,
             query_id: urlParams.get('query_id'),
             user: JSON.parse(urlParams.get('user')),
             auth_date: urlParams.get('auth_date'),
@@ -156,6 +160,10 @@ let ChatService = class ChatService {
         event.name = 'webAppValidate';
         event.description = `chat: #id${UserData.user.id}\nvalidate: #${String(validate)}`;
         this.eventEmitter.emit('event', event);
+        if (validate) {
+            const appId = await this.verificationExistenceUser(UserData.user);
+            UserData.appUser = appId.id;
+        }
         return (response = { validate, UserData });
     }
 };

@@ -13,6 +13,7 @@ import { Namespace } from 'socket.io';
 import { WsCatchAllFilter } from 'src/exceptions/ws-catch-all-filter';
 import { ChatService } from './chat.service';
 import { SocketWithAuth } from 'src/types/types';
+import { Prisma } from '@prisma/client';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(new WsCatchAllFilter())
@@ -62,7 +63,7 @@ export class ChatGateway
 
   async handleDisconnect(client: SocketWithAuth) {
     const { chat, user } = client;
-    const updatedPoll = await this.chatService.removeParticipant(chat, user);
+    const updatedPoll: Prisma.BatchPayload = await this.chatService.removeParticipant(chat, user);
 
     const roomName = client.name;
 

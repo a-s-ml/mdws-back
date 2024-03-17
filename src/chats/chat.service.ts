@@ -4,7 +4,14 @@ import { DbService } from 'src/db/db.service';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserTg } from 'src/types/tg-types';
-import { JoinChatFields, Chat, EventClass, responseValidate, responseUserData } from 'src/types/types';
+import {
+  JoinChatFields,
+  Chat,
+  EventClass,
+  responseValidate,
+  responseUserData,
+  responseUser,
+} from 'src/types/types';
 import { createHmac } from 'crypto';
 
 @Injectable()
@@ -86,12 +93,13 @@ export class ChatService {
   }
 
   async removeParticipant(from: number, user: number) {
-    return await this.dbService.participant.deleteMany({
+    const res = await this.dbService.participant.deleteMany({
       where: {
         chat: from,
         user: user,
       },
     });
+    return res;
   }
 
   async getChat(id: number): Promise<Chat> {
@@ -112,11 +120,11 @@ export class ChatService {
     });
   }
 
-  async verificationExistenceUser(from: UserTg) {
-    const checkUser = await this.userFindByTgid(from.id);
+  async verificationExistenceUser(from: responseUser) {
+    const checkUser = await this.userFindByTgid(from.id as unknown as number);
     if (!checkUser) {
-      await this.createUser({
-        tgid: from.id,
+      const appId = await this.createUser({
+        tgid: from.id as unknown as number,
         type: 1,
         name: from.username,
       });
@@ -124,7 +132,9 @@ export class ChatService {
       event.name = 'newUser';
       event.description = `chat: #id${from.id}\nusername: @${from.username}`;
       this.eventEmitter.emit('event', event);
+      return appId;
     }
+    return checkUser;
   }
 
   async userFindByTgid(tgid: number) {
@@ -151,6 +161,7 @@ export class ChatService {
     urlParams.sort();
 
     const UserData: responseUserData = {
+      appUser: null,
       query_id: urlParams.get('query_id'),
       user: JSON.parse(urlParams.get('user')),
       auth_date: urlParams.get('auth_date'),
@@ -179,6 +190,11 @@ export class ChatService {
       validate,
     )}`;
     this.eventEmitter.emit('event', event);
+
+    if (validate) {
+      const appId = await this.verificationExistenceUser(UserData.user);
+      UserData.appUser = appId.id;
+    }
 
     return (response = { validate, UserData });
   }
