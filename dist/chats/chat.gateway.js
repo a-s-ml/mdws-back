@@ -45,7 +45,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         let updatedPoll;
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindByTgid(client.user);
-        updatedPoll.type = 'connect';
+        updatedPoll.type = 1;
         updatedPoll.chat = dbchat;
         updatedPoll.user = dbuser;
         updatedPoll.text = null;
@@ -59,7 +59,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             let updatedPoll;
             const dbchat = await this.chatService.getChat(chat);
             const dbuser = await this.chatService.userFindByTgid(user);
-            updatedPoll.type = 'disconnect';
+            updatedPoll.type = 2;
             updatedPoll.chat = dbchat;
             updatedPoll.user = dbuser;
             updatedPoll.text = null;
@@ -82,7 +82,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         let updatedPoll;
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindByTgid(client.user);
-        updatedPoll.type = 'message';
+        updatedPoll.type = 3;
         updatedPoll.chat = dbchat;
         updatedPoll.user = dbuser;
         updatedPoll.text = addMessage;

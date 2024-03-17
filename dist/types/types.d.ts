@@ -11,7 +11,7 @@ export type Chat = {
     type: number;
 };
 export type UpdatedPoll = {
-    type: string;
+    type: number;
     user: User;
     chat: Chat;
     text: Message | null;
