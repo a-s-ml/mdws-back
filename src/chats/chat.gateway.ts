@@ -59,7 +59,7 @@ export class ChatGateway
     });
 
     const dbchat = await this.chatService.getChat(client.chat);
-    const dbuser = await this.chatService.userFindByTgid(client.user);
+    const dbuser = await this.chatService.userFindById(client.user);
 
     const updatedPoll: UpdatedPoll = {
       type: 'connect',
@@ -80,7 +80,7 @@ export class ChatGateway
 
     if (removeParticipant) {
       const dbchat = await this.chatService.getChat(chat);
-      const dbuser = await this.chatService.userFindByTgid(user);
+      const dbuser = await this.chatService.userFindById(user);
 
       const updatedPoll: UpdatedPoll = {
         type: 'disconnect',
@@ -122,7 +122,7 @@ export class ChatGateway
     const roomName = client.name;
 
     const dbchat = await this.chatService.getChat(client.chat);
-    const dbuser = await this.chatService.userFindByTgid(client.user);
+    const dbuser = await this.chatService.userFindById(client.user);
 
     const updatedPoll: UpdatedPoll = {
       type: 'message',
