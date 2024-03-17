@@ -66,6 +66,12 @@ export declare class ChatService {
         type: number;
         name: string;
     }>;
+    getMessages(chat: number): Promise<{
+        id: number;
+        user: number;
+        chat: number;
+        text: string;
+    }[]>;
     userFindById(id: number): Promise<{
         id: number;
         tgid: bigint;

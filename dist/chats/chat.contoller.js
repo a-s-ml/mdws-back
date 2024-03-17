@@ -26,6 +26,9 @@ let ChatController = class ChatController {
     initData(initData) {
         return this.chatService.validateUser(initData);
     }
+    messages(chat) {
+        return this.chatService.getMessages(chat);
+    }
     async create(createPollDto) {
         return await this.chatService.createChat(createPollDto);
     }
@@ -48,6 +51,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ChatController.prototype, "initData", null);
+__decorate([
+    (0, common_1.Get)('messages/:chat'),
+    __param(0, (0, common_1.Param)('chat')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "messages", null);
 __decorate([
     (0, common_3.Post)(),
     __param(0, (0, common_3.Body)()),

@@ -144,6 +144,14 @@ export class ChatService {
     });
   }
 
+  async getMessages(chat: number) {
+    return await this.dbService.message.findMany({
+      where: {
+        chat,
+      },
+    });
+  }
+
   async userFindById(id: number) {
     return await this.dbService.user.findUnique({
       where: {

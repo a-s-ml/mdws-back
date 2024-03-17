@@ -125,6 +125,13 @@ let ChatService = class ChatService {
             },
         });
     }
+    async getMessages(chat) {
+        return await this.dbService.message.findMany({
+            where: {
+                chat,
+            },
+        });
+    }
     async userFindById(id) {
         return await this.dbService.user.findUnique({
             where: {

@@ -8,6 +8,12 @@ export declare class ChatController {
         validate: boolean;
         UserData: import("src/types/types").responseUserData;
     }>;
+    messages(chat: number): Promise<{
+        id: number;
+        user: number;
+        chat: number;
+        text: string;
+    }[]>;
     create(createPollDto: Prisma.chatCreateInput): Promise<{
         chat: {
             id: number;
