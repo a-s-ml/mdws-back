@@ -32,14 +32,9 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
     async handleConnection(client) {
         var _a, _b, _c;
         const sockets = this.io.sockets;
-        this.logger.debug(`Socket connected with userID: ${client.user}, pollID: ${client.chat}, and name: "${client.name}"`);
-        this.logger.log(`WS Client with id: ${client.id} connected!`);
-        this.logger.debug(`Number of connected sockets: ${sockets.size}`);
         const roomName = client.name;
         await client.join(roomName);
         const connectedClients = (_c = (_b = (_a = this.io.adapter.rooms) === null || _a === void 0 ? void 0 : _a.get(roomName)) === null || _b === void 0 ? void 0 : _b.size) !== null && _c !== void 0 ? _c : 0;
-        this.logger.debug(`userID: ${client.user} joined room with name: ${roomName}`);
-        this.logger.debug(`Total clients connected to room '${roomName}': ${connectedClients}`);
         const addParticipant = await this.chatService.addParticipant({
             chat: client.chat,
             user: client.user,
@@ -47,6 +42,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindById(client.user);
         const updatedPoll = {
+            size: connectedClients,
             type: 'connect',
             chat: dbchat,
             user: dbuser,
@@ -55,13 +51,16 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         this.io.to(String(roomName)).emit('chat_updated', updatedPoll);
     }
     async handleDisconnect(client) {
+        var _a, _b, _c;
         const { chat, user } = client;
         const removeParticipant = await this.chatService.removeParticipant(chat, user);
         const roomName = client.name;
         if (removeParticipant) {
             const dbchat = await this.chatService.getChat(chat);
             const dbuser = await this.chatService.userFindById(user);
+            const connectedClients = (_c = (_b = (_a = this.io.adapter.rooms) === null || _a === void 0 ? void 0 : _a.get(roomName)) === null || _b === void 0 ? void 0 : _b.size) !== null && _c !== void 0 ? _c : 0;
             const updatedPoll = {
+                size: connectedClients,
                 type: 'disconnect',
                 chat: dbchat,
                 user: dbuser,
@@ -77,6 +76,7 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         }
     }
     async message(text, client) {
+        var _a, _b, _c;
         const addMessage = await this.chatService.addMessage({
             chat: client.chat,
             user: client.user,
@@ -85,7 +85,9 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         const roomName = client.name;
         const dbchat = await this.chatService.getChat(client.chat);
         const dbuser = await this.chatService.userFindById(client.user);
+        const connectedClients = (_c = (_b = (_a = this.io.adapter.rooms) === null || _a === void 0 ? void 0 : _a.get(roomName)) === null || _b === void 0 ? void 0 : _b.size) !== null && _c !== void 0 ? _c : 0;
         const updatedPoll = {
+            size: connectedClients,
             type: 'message',
             chat: dbchat,
             user: dbuser,

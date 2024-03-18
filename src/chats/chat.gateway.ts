@@ -15,11 +15,6 @@ import { ChatService } from './chat.service';
 import { SocketWithAuth, UpdatedPoll } from 'src/types/types';
 import { Prisma } from '@prisma/client';
 
-type joinRoomData = {
-  email: string;
-  room: string;
-};
-
 const emailToSocketIdMap = new Map();
 const socketidToEmailMap = new Map();
 
@@ -42,24 +37,11 @@ export class ChatGateway
 
   async handleConnection(client: SocketWithAuth) {
     const sockets = this.io.sockets;
-    this.logger.debug(
-      `Socket connected with userID: ${client.user}, pollID: ${client.chat}, and name: "${client.name}"`,
-    );
-
-    this.logger.log(`WS Client with id: ${client.id} connected!`);
-    this.logger.debug(`Number of connected sockets: ${sockets.size}`);
 
     const roomName = client.name;
     await client.join(roomName);
 
     const connectedClients = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
-
-    this.logger.debug(
-      `userID: ${client.user} joined room with name: ${roomName}`,
-    );
-    this.logger.debug(
-      `Total clients connected to room '${roomName}': ${connectedClients}`,
-    );
 
     const addParticipant = await this.chatService.addParticipant({
       chat: client.chat,
@@ -70,6 +52,7 @@ export class ChatGateway
     const dbuser = await this.chatService.userFindById(client.user);
 
     const updatedPoll: UpdatedPoll = {
+      size: connectedClients,
       type: 'connect',
       chat: dbchat,
       user: dbuser,
@@ -89,8 +72,10 @@ export class ChatGateway
     if (removeParticipant) {
       const dbchat = await this.chatService.getChat(chat);
       const dbuser = await this.chatService.userFindById(user);
+      const connectedClients = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
 
       const updatedPoll: UpdatedPoll = {
+        size: connectedClients,
         type: 'disconnect',
         chat: dbchat,
         user: dbuser,
@@ -131,8 +116,10 @@ export class ChatGateway
 
     const dbchat = await this.chatService.getChat(client.chat);
     const dbuser = await this.chatService.userFindById(client.user);
+    const connectedClients = this.io.adapter.rooms?.get(roomName)?.size ?? 0;
 
     const updatedPoll: UpdatedPoll = {
+      size: connectedClients,
       type: 'message',
       chat: dbchat,
       user: dbuser,
@@ -144,7 +131,7 @@ export class ChatGateway
 
   @SubscribeMessage('room:join')
   async roomjoin(
-    @MessageBody() data: joinRoomData,
+    @MessageBody() data: any,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     const { email, room } = data;
@@ -157,7 +144,7 @@ export class ChatGateway
 
   @SubscribeMessage('user:call')
   async usercall(
-    @MessageBody() data: joinRoomData,
+    @MessageBody() data: any,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     const { to, offer }: any = data;
@@ -166,7 +153,7 @@ export class ChatGateway
 
   @SubscribeMessage('call:accepted')
   async callaccepted(
-    @MessageBody() data: joinRoomData,
+    @MessageBody() data: any,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     const { to, ans }: any = data;
@@ -175,7 +162,7 @@ export class ChatGateway
 
   @SubscribeMessage('peer:nego:needed')
   async peernegoneeded(
-    @MessageBody() data: joinRoomData,
+    @MessageBody() data: any,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     const { to, offer }: any = data;
