@@ -21,6 +21,11 @@ export class ChatController {
     return this.chatService.getMessages(+chat);
   }
 
+  @Get('users/:id')
+  users(@Param('id') id: number) {
+    return this.chatService.userFindById(+id);
+  }
+
   @Post()
   async create(@Body() createPollDto: Prisma.chatCreateInput) {
     return await this.chatService.createChat(createPollDto);

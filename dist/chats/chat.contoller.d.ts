@@ -14,6 +14,12 @@ export declare class ChatController {
         chat: number;
         text: string;
     }[]>;
+    users(id: number): Promise<{
+        id: number;
+        tgid: bigint;
+        type: number;
+        name: string;
+    }>;
     create(createPollDto: Prisma.chatCreateInput): Promise<{
         chat: {
             id: number;
